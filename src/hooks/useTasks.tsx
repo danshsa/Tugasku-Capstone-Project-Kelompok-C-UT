@@ -60,9 +60,10 @@ export const useTasks = (userId: string | undefined) => {
     });
     
     if (dueTasks.length > 0) {
-      toast(`Anda memiliki ${dueTasks.length} tugas yang jatuh tempo hari ini!`, {
+      toast(`Ada ${dueTasks.length} tugas yang harus diselesaikan hari ini!`, {
         duration: 5000
       });
+      
     }
   };
 
