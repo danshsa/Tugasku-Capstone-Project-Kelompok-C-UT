@@ -160,7 +160,7 @@ serve(async (req) => {
           <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
             <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 10px 10px 0 0; text-align: center;">
               <h1 style="margin: 0; font-size: 28px;">⏰ Pengingat Tugas</h1>
-              <p style="margin: 10px 0 0 0; font-size: 16px; opacity: 0.9;">AcademiFlow Task Manager</p>
+              <p style="margin: 10px 0 0 0; font-size: 16px; opacity: 0.9;">Tugasku</p>
             </div>
             
             <div style="background: #f8f9fa; padding: 30px; border-radius: 0 0 10px 10px; border: 1px solid #e9ecef;">
@@ -177,7 +177,7 @@ serve(async (req) => {
               </div>
               
               <div style="text-align: center; margin: 30px 0;">
-                <a href="https://academi-flow-tasks.vercel.app" 
+                <a href="https://tugaskuu.xyz" 
                    style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
                           color: white; 
                           padding: 15px 30px; 
