@@ -195,7 +195,7 @@ serve(async (req) => {
               
               <p style="color: #6c757d; font-size: 14px; text-align: center; margin: 0;">
                 Email ini dikirim secara otomatis oleh AcademiFlow Task Manager.<br>
-                <a href="https://academi-flow-tasks.vercel.app" style="color: #667eea;">Kelola tugas Anda</a>
+                <a href="https://tugaskuu.xyz" style="color: #667eea;">Kelola tugas Anda</a>
               </p>
             </div>
           </body>
