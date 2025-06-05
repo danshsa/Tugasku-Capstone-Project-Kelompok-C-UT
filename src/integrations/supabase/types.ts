@@ -9,6 +9,44 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      emails: {
+        Row: {
+          body: string
+          created_at: string | null
+          id: string
+          sent_at: string | null
+          subject: string
+          task_id: string | null
+          to_email: string
+        }
+        Insert: {
+          body: string
+          created_at?: string | null
+          id?: string
+          sent_at?: string | null
+          subject: string
+          task_id?: string | null
+          to_email: string
+        }
+        Update: {
+          body?: string
+          created_at?: string | null
+          id?: string
+          sent_at?: string | null
+          subject?: string
+          task_id?: string | null
+          to_email?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "emails_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
@@ -34,8 +72,13 @@ export type Database = {
         Row: {
           completed: boolean
           created_at: string
-          deadline: string
+          due_date: string
           id: string
+          last_reminder_sent: number | null
+          reminder_1h_sent: boolean | null
+          reminder_2d_sent: boolean | null
+          reminder_3d_sent: boolean | null
+          reminder_6h_sent: boolean | null
           title: string
           updated_at: string
           user_id: string
@@ -43,8 +86,13 @@ export type Database = {
         Insert: {
           completed?: boolean
           created_at?: string
-          deadline: string
+          due_date: string
           id?: string
+          last_reminder_sent?: number | null
+          reminder_1h_sent?: boolean | null
+          reminder_2d_sent?: boolean | null
+          reminder_3d_sent?: boolean | null
+          reminder_6h_sent?: boolean | null
           title: string
           updated_at?: string
           user_id: string
@@ -52,13 +100,26 @@ export type Database = {
         Update: {
           completed?: boolean
           created_at?: string
-          deadline?: string
+          due_date?: string
           id?: string
+          last_reminder_sent?: number | null
+          reminder_1h_sent?: boolean | null
+          reminder_2d_sent?: boolean | null
+          reminder_3d_sent?: boolean | null
+          reminder_6h_sent?: boolean | null
           title?: string
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "tasks_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

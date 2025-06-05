@@ -1,13 +1,12 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
-// Type definition for a task
+// Updated type definition for a task with new due_date field
 export interface Task {
   id: string;
   title: string;
-  deadline: string;
+  due_date: string; // Changed from deadline to due_date
   user_id: string;
   completed: boolean;
   created_at: string;
@@ -30,7 +29,7 @@ export const useTasks = (userId: string | undefined) => {
         .from('tasks')
         .select('*')
         .eq('user_id', userId)
-        .order('deadline', { ascending: true });
+        .order('due_date', { ascending: true }); // Updated field name
 
       if (error) {
         console.error('Error loading tasks:', error);
@@ -56,7 +55,7 @@ export const useTasks = (userId: string | undefined) => {
     
     const dueTasks = taskList.filter(task => {
       if (task.completed) return false;
-      const taskDeadline = new Date(task.deadline);
+      const taskDeadline = new Date(task.due_date); // Updated field name
       return taskDeadline >= startOfDay && taskDeadline < endOfDay;
     });
     
@@ -76,7 +75,7 @@ export const useTasks = (userId: string | undefined) => {
         .from('tasks')
         .insert([{
           title: title.trim(),
-          deadline: new Date(deadline).toISOString(),
+          due_date: new Date(deadline).toISOString(), // Updated field name
           user_id: userId,
           completed: false
         }])
@@ -108,7 +107,7 @@ export const useTasks = (userId: string | undefined) => {
         .from('tasks')
         .update({
           title: title.trim(),
-          deadline: new Date(deadline).toISOString(),
+          due_date: new Date(deadline).toISOString(), // Updated field name
           updated_at: new Date().toISOString()
         })
         .eq('id', taskId)

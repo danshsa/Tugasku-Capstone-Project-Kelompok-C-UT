@@ -15,7 +15,10 @@ const Index = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <p className="text-indigo-600 font-medium">Memuat...</p>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mx-auto"></div>
+          <p className="mt-2 text-indigo-600 font-medium">Memuat...</p>
+        </div>
       </div>
     );
   }
@@ -30,13 +33,18 @@ const Index = () => {
             <h1 className="text-3xl font-bold text-indigo-600">Tugasku</h1>
           </div>
           {isLoggedIn && (
-            <Button 
-              onClick={handleLogout} 
-              variant="outline"
-              className="text-indigo-600 border-indigo-600 hover:bg-indigo-50"
-            >
-              Keluar
-            </Button>
+            <div className="flex items-center gap-4">
+              <span className="text-sm text-gray-600">
+                Selamat datang, {user?.user_metadata?.name || user?.email}
+              </span>
+              <Button 
+                onClick={handleLogout} 
+                variant="outline"
+                className="text-indigo-600 border-indigo-600 hover:bg-indigo-50"
+              >
+                Keluar
+              </Button>
+            </div>
           )}
         </div>
         
@@ -47,12 +55,28 @@ const Index = () => {
               Selamat Datang di Tugasku
             </h2>
             <p className="mb-6 text-center text-gray-600">
-              Kelola tenggat waktu akademis Anda dengan mudah
+              Kelola Deadline Anda dengan Mudah
             </p>
             <AuthForm />
           </Card>
-        ) : (
+        ) : user?.email_confirmed_at ? (
           <TaskManager user={user} />
+        ) : (
+          <Card className="p-6 max-w-md mx-auto text-center">
+            <h2 className="text-xl font-semibold mb-4 text-orange-600">
+              Email Belum Dikonfirmasi
+            </h2>
+            <p className="text-gray-600 mb-4">
+              Silakan periksa email Anda dan klik link konfirmasi untuk mengaktifkan akun.
+            </p>
+            <Button 
+              onClick={handleLogout}
+              variant="outline"
+              className="text-indigo-600 border-indigo-600 hover:bg-indigo-50"
+            >
+              Keluar dan Masuk Kembali
+            </Button>
+          </Card>
         )}
       </div>
     </div>

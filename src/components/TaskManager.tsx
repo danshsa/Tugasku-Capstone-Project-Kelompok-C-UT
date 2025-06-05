@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -15,7 +14,6 @@ import {
 } from "lucide-react";
 import TaskItem from "@/components/TaskItem";
 import TaskForm from "@/components/TaskForm";
-import ReminderTest from "@/components/ReminderTest";
 import { useTasks, Task } from "@/hooks/useTasks";
 
 interface TaskManagerProps {
@@ -68,28 +66,33 @@ const TaskManager: React.FC<TaskManagerProps> = ({ user }) => {
     return success;
   };
 
-  // Start editing a task
+  // Start editing a task - fix timezone display
   const startEditTask = (task: Task) => {
-    // Format the datetime for the datetime-local input
-    const formattedDeadline = new Date(task.deadline).toISOString().slice(0, 16);
-    setEditingTask({ ...task, deadline: formattedDeadline });
+    // Convert UTC due_date to local time for datetime-local input
+    const taskDate = new Date(task.due_date);
+    // Get local timezone offset and adjust
+    const localOffset = taskDate.getTimezoneOffset() * 60000;
+    const localTime = new Date(taskDate.getTime() - localOffset);
+    const formattedDeadline = localTime.toISOString().slice(0, 16);
+    
+    setEditingTask({ ...task, due_date: formattedDeadline });
     setIsEditDialogOpen(true);
   };
 
   // Group tasks by date for better organization
   const groupTasksByDate = (taskList: Task[]) => {
-    // Sort tasks by completion status and deadline
+    // Sort tasks by completion status and due_date
     const sortedTasks = [...taskList].sort((a, b) => {
       if (a.completed !== b.completed) {
         return a.completed ? 1 : -1;
       }
-      return new Date(a.deadline).getTime() - new Date(b.deadline).getTime();
+      return new Date(a.due_date).getTime() - new Date(b.due_date).getTime();
     });
 
     // Group by date
     const grouped: { [key: string]: Task[] } = {};
     sortedTasks.forEach(task => {
-      const dateKey = new Date(task.deadline).toISOString().split('T')[0];
+      const dateKey = new Date(task.due_date).toISOString().split('T')[0];
       if (!grouped[dateKey]) {
         grouped[dateKey] = [];
       }
@@ -209,7 +212,7 @@ const TaskManager: React.FC<TaskManagerProps> = ({ user }) => {
           {editingTask && (
             <TaskForm
               initialTitle={editingTask.title}
-              initialDeadline={editingTask.deadline}
+              initialDeadline={editingTask.due_date}
               onSubmit={handleEditTask}
               onCancel={() => setIsEditDialogOpen(false)}
               submitButtonText="Simpan Perubahan"
@@ -218,9 +221,6 @@ const TaskManager: React.FC<TaskManagerProps> = ({ user }) => {
           )}
         </DialogContent>
       </Dialog>
-      
-      {/* Email Reminder Test Component */}
-      <ReminderTest />
     </div>
   );
 };

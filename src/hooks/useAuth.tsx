@@ -11,39 +11,57 @@ export const useAuth = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let mounted = true;
+
+    // Check for existing session first
+    const getInitialSession = async () => {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error) {
+          console.error('Error getting session:', error);
+        }
+        
+        if (mounted) {
+          setSession(session);
+          setUser(session?.user ?? null);
+          setLoading(false);
+        }
+      } catch (error) {
+        console.error('Error in getInitialSession:', error);
+        if (mounted) {
+          setLoading(false);
+        }
+      }
+    };
+
     // Set up authentication state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
+      async (event, session) => {
         console.log('Auth state changed:', event);
+        
+        if (!mounted) return;
+
+        // Update state for all events
         setSession(session);
         setUser(session?.user ?? null);
-        
-        // Show toast notifications for auth events
+
+        // Only show toasts for specific events to prevent spam
         if (event === 'SIGNED_IN') {
           toast.success("Berhasil masuk!");
         } else if (event === 'SIGNED_OUT') {
           toast.info("Berhasil keluar");
+        } else if (event === 'TOKEN_REFRESHED') {
+          console.log('Token refreshed successfully');
         }
       }
     );
 
-    // Check for existing session on mount
-    const checkExistingSession = async () => {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        setSession(session);
-        setUser(session?.user ?? null);
-      } catch (error) {
-        console.error('Error checking auth status:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
+    getInitialSession();
 
-    checkExistingSession();
-
-    // Cleanup subscription on unmount
+    // Cleanup function
     return () => {
+      mounted = false;
       subscription.unsubscribe();
     };
   }, []);
@@ -53,6 +71,9 @@ export const useAuth = () => {
     try {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
+      
+      // Let React handle the state change naturally
+      // Don't force page reload
     } catch (error) {
       console.error('Error signing out:', error);
       toast.error("Gagal keluar. Silakan coba lagi.");

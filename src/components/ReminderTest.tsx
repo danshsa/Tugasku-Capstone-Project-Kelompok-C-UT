@@ -4,22 +4,25 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { AlertCircle, CheckCircle, Info, Mail } from "lucide-react";
+import { AlertCircle, CheckCircle, Info, Mail, TestTube } from "lucide-react";
 
 // Component to test email reminder functionality
 const ReminderTest = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   // Trigger the email reminder function manually
-  const triggerReminders = async () => {
+  const triggerReminders = async (testMode = false) => {
     setIsLoading(true);
     
     try {
-      console.log('Triggering reminder function...');
+      console.log(`Triggering reminder function in ${testMode ? 'test' : 'normal'} mode...`);
       
       // Call the Supabase edge function
       const { data, error } = await supabase.functions.invoke('send-task-reminders', {
-        body: { password: 'test-password' },
+        body: { 
+          password: 'test-password',
+          testMode: testMode
+        },
       });
       
       if (error) {
@@ -34,6 +37,14 @@ const ReminderTest = () => {
       }
       
       const { summary, results } = data;
+      
+      // Show test mode indicator
+      if (testMode) {
+        toast.info('Mode pengujian diaktifkan - memeriksa tugas dalam 7 hari ke depan', {
+          icon: <TestTube className="h-5 w-5" />,
+          duration: 3000
+        });
+      }
       
       // Show appropriate toast messages based on results
       if (summary?.totalTasksChecked === 0) {
@@ -50,7 +61,12 @@ const ReminderTest = () => {
         // Log details about sent emails
         const sentEmails = results?.filter((r: any) => r.status === 'sent') || [];
         sentEmails.forEach((email: any) => {
-          console.log(`Email sent to ${email.email} for task "${email.taskTitle}" (${email.timeUntilDeadline} remaining)`);
+          console.log(`Email sent to ${email.email} for task "${email.taskTitle}" (${email.timeUntilDeadline} remaining, ${email.reminderHours}h interval)`);
+        });
+      } else {
+        toast.info(`Diperiksa ${summary.totalTasksChecked} tugas, tidak ada yang memerlukan pengingat saat ini.`, {
+          icon: <Info className="h-5 w-5" />,
+          duration: 5000
         });
       }
       
@@ -114,16 +130,37 @@ const ReminderTest = () => {
             <Mail className="h-5 w-5" />
             Pengujian Sistem Pengingat Email
           </h3>
+          <p className="text-sm text-gray-600 mb-4">
+            Sistem akan mengirim pengingat pada 3 hari, 2 hari, 1 hari, 6 jam, dan 1 jam sebelum tenggat waktu.
+          </p>
         </div>
         
-        <Button 
-          onClick={triggerReminders} 
-          disabled={isLoading}
-          className="w-full bg-indigo-600 hover:bg-indigo-700 text-white"
-          size="lg"
-        >
-          {isLoading ? 'Memproses...' : 'Picu Pengingat Secara Manual'}
-        </Button>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <Button 
+            onClick={() => triggerReminders(false)} 
+            disabled={isLoading}
+            className="bg-indigo-600 hover:bg-indigo-700 text-white"
+            size="lg"
+          >
+            {isLoading ? 'Memproses...' : 'Picu Pengingat Normal'}
+          </Button>
+          
+          <Button 
+            onClick={() => triggerReminders(true)} 
+            disabled={isLoading}
+            variant="outline"
+            className="border-indigo-600 text-indigo-600 hover:bg-indigo-50"
+            size="lg"
+          >
+            <TestTube className="h-4 w-4 mr-2" />
+            {isLoading ? 'Memproses...' : 'Mode Pengujian (7 hari)'}
+          </Button>
+        </div>
+        
+        <div className="text-xs text-gray-500 mt-3 p-3 bg-gray-50 rounded-lg">
+          <p><strong>Mode Normal:</strong> Memeriksa tugas dalam 3 hari ke depan</p>
+          <p><strong>Mode Pengujian:</strong> Memeriksa tugas dalam 7 hari ke depan untuk pengujian yang lebih mudah</p>
+        </div>
       </div>
     </Card>
   );

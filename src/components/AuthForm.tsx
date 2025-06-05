@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,23 +23,32 @@ const AuthForm: React.FC = () => {
       return;
     }
 
+    if (password.length < 6) {
+      toast.error("Kata sandi harus minimal 6 karakter");
+      return;
+    }
+
     setLoading(true);
     
     try {
+      // Get the current URL for email redirect
+      const redirectUrl = `${window.location.origin}/`;
+      
       const { data, error } = await supabase.auth.signUp({
-        email,
+        email: email.trim(),
         password,
         options: {
           data: {
             name: name.trim()
-          }
+          },
+          emailRedirectTo: redirectUrl
         }
       });
 
       if (error) throw error;
       
-      if (data.user) {
-        toast.success("Akun berhasil dibuat!");
+      if (data.user && !data.session) {
+        toast.success("Akun berhasil dibuat! Silakan periksa email Anda untuk konfirmasi sebelum masuk.");
         // Clear form
         setName('');
         setEmail('');
@@ -48,7 +56,14 @@ const AuthForm: React.FC = () => {
       }
     } catch (error: any) {
       console.error('Error signing up:', error);
-      toast.error(error.message || "Gagal membuat akun. Silakan coba lagi.");
+      
+      if (error.message?.includes('User already registered')) {
+        toast.error("Email sudah terdaftar. Silakan gunakan email lain atau masuk dengan akun yang ada.");
+      } else if (error.message?.includes('Invalid email')) {
+        toast.error("Format email tidak valid");
+      } else {
+        toast.error(error.message || "Gagal membuat akun. Silakan coba lagi.");
+      }
     } finally {
       setLoading(false);
     }
@@ -75,13 +90,28 @@ const AuthForm: React.FC = () => {
       if (error) throw error;
       
       if (data.user) {
-        // Clear form
+        // Check if email is confirmed
+        if (!data.user.email_confirmed_at) {
+          toast.error("Silakan konfirmasi email Anda terlebih dahulu sebelum masuk.");
+          await supabase.auth.signOut();
+          return;
+        }
+        
+        // Clear form and let React handle the state change naturally
         setEmail('');
         setPassword('');
+        // No forced redirect - let useAuth handle the state change
       }
     } catch (error: any) {
       console.error('Error signing in:', error);
-      toast.error(error.message || "Gagal masuk. Silakan periksa kredensial Anda.");
+      
+      if (error.message?.includes('Invalid login credentials')) {
+        toast.error("Email atau kata sandi salah");
+      } else if (error.message?.includes('Email not confirmed')) {
+        toast.error("Silakan konfirmasi email Anda terlebih dahulu");
+      } else {
+        toast.error(error.message || "Gagal masuk. Silakan periksa kredensial Anda.");
+      }
     } finally {
       setLoading(false);
     }
@@ -151,7 +181,7 @@ const AuthForm: React.FC = () => {
             <Input 
               id="signup-name"
               type="text" 
-              placeholder="Masukkan Nama Anda" 
+              placeholder="John Doe" 
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
@@ -176,7 +206,7 @@ const AuthForm: React.FC = () => {
           
           <div className="space-y-2">
             <Label htmlFor="signup-password" className="text-indigo-600">
-              Kata Sandi
+              Kata Sandi (minimal 6 karakter)
             </Label>
             <Input 
               id="signup-password"
@@ -185,6 +215,7 @@ const AuthForm: React.FC = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              minLength={6}
               className="text-indigo-600 focus:border-indigo-600 focus:ring-indigo-600"
             />
           </div>

@@ -4,16 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Trash2, Edit, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-interface Task {
-  id: string;
-  title: string;
-  deadline: string;
-  user_id: string;
-  completed: boolean;
-  created_at: string;
-  updated_at: string;
-}
+import { Task } from "@/hooks/useTasks";
 
 interface TaskItemProps {
   task: Task;
@@ -23,9 +14,9 @@ interface TaskItemProps {
 }
 
 const TaskItem: React.FC<TaskItemProps> = ({ task, onToggleComplete, onDelete, onEdit }) => {
-  // Format the deadline to show both date and time
-  const formatDeadline = (deadline: string) => {
-    const date = new Date(deadline);
+  // Format the due_date to show both date and time
+  const formatDeadline = (due_date: string) => {
+    const date = new Date(due_date);
     return date.toLocaleString('id-ID', {
       weekday: 'short',
       day: 'numeric',
@@ -38,14 +29,14 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, onToggleComplete, onDelete, o
   // Check if the task is overdue
   const isOverdue = () => {
     const now = new Date();
-    const deadline = new Date(task.deadline);
+    const deadline = new Date(task.due_date);
     return !task.completed && deadline < now;
   };
 
   // Check if the task is due soon (within 24 hours)
   const isDueSoon = () => {
     const now = new Date();
-    const deadline = new Date(task.deadline);
+    const deadline = new Date(task.due_date);
     const hoursUntilDeadline = (deadline.getTime() - now.getTime()) / (1000 * 60 * 60);
     return !task.completed && hoursUntilDeadline > 0 && hoursUntilDeadline <= 24;
   };
@@ -77,7 +68,7 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, onToggleComplete, onDelete, o
             isOverdue() ? "text-red-600" : isDueSoon() ? "text-gray-600" : "text-muted-foreground"
           )}>
             <Clock className="h-3 w-3" />
-            <span>{formatDeadline(task.deadline)}</span>
+            <span>{formatDeadline(task.due_date)}</span>
             {isOverdue() && <span className="font-medium">(Terlambat)</span>}
             {isDueSoon() && !isOverdue() && <span className="font-medium">(Segera berakhir)</span>}
           </div>
