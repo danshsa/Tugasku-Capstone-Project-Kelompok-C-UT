@@ -26,8 +26,8 @@ serve(async (req) => {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     const resendApiKey = Deno.env.get('RESEND_API_KEY')!
-    const senderEmail = Deno.env.get('SENDER_EMAIL') || 'noreply@yourdomain.com'
-    const senderName = Deno.env.get('SENDER_NAME') || 'AcademiFlow Task Manager'
+    const senderEmail = Deno.env.get('SENDER_EMAIL') || 'noreply@tugaskuu.xyz'
+    const senderName = Deno.env.get('SENDER_NAME') || 'Tugasku'
 
     if (!supabaseUrl || !supabaseServiceKey) {
       throw new Error('Missing required environment variables: SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY')
