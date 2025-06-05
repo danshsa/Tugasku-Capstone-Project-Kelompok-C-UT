@@ -181,7 +181,7 @@ const AuthForm: React.FC = () => {
             <Input 
               id="signup-name"
               type="text" 
-              placeholder="John Doe" 
+              placeholder="Masukkan nama Anda" 
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
