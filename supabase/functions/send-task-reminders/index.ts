@@ -194,7 +194,7 @@ serve(async (req) => {
               <hr style="border: none; border-top: 1px solid #dee2e6; margin: 30px 0;">
               
               <p style="color: #6c757d; font-size: 14px; text-align: center; margin: 0;">
-                Email ini dikirim secara otomatis oleh AcademiFlow Task Manager.<br>
+                Email ini dikirim secara otomatis oleh Tugasku.<br>
                 <a href="https://tugaskuu.xyz" style="color: #667eea;">Kelola tugas Anda</a>
               </p>
             </div>
