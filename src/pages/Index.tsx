@@ -35,7 +35,7 @@ const Index = () => {
           {isLoggedIn && (
             <div className="flex items-center gap-4">
               <span className="text-sm text-gray-600">
-                Selamat datang, {user?.user_metadata?.name || user?.email}
+                Halo, {user?.user_metadata?.name}
               </span>
               <Button 
                 onClick={handleLogout} 
