@@ -56,4 +56,4 @@ Tugasku akan otomatis mengirimkan email pengingat pada waktu berikut:
 Jika mengalami masalah teknis atau tidak menerima email pengingat, hubungi tim pengembang atau periksa pengaturan email Anda.
 
 ---
-*Tugasku - Kelola deadline akademis dengan mudah!*
+*Tugasku - Kelola deadline Anda dengan mudah!*
