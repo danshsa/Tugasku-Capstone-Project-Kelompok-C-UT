@@ -63,7 +63,7 @@ serve(async (req)=>{
       });
     }
     let emailsSent = 0;
-    const appUrl = 'https://academi-flow-tasks.vercel.app';
+    const appUrl = 'https://tugaskuu.xyz';
     for (const task of tasks){
       const deadlineTime = new Date(task.due_date).getTime();
       const timeUntilDeadline = deadlineTime - nowUtc;
