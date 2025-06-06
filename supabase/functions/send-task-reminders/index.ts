@@ -63,7 +63,7 @@ serve(async (req)=>{
       });
     }
     let emailsSent = 0;
-    const appUrl = 'https://tugaskuu.xyz';
+    const appUrl = 'https://academi-flow-tasks.vercel.app';
     for (const task of tasks){
       const deadlineTime = new Date(task.due_date).getTime();
       const timeUntilDeadline = deadlineTime - nowUtc;
@@ -111,6 +111,28 @@ serve(async (req)=>{
         console.log(`Skipping task ${task.id} - no email found`);
         continue;
       }
+      // Calculate actual time remaining for subject line
+      const hoursRemaining = Math.floor(timeUntilDeadline / (60 * 60 * 1000));
+      const daysRemaining = Math.floor(hoursRemaining / 24);
+      let timeRemainingText = '';
+      if (daysRemaining >= 1) {
+        const remainingHours = hoursRemaining % 24;
+        if (remainingHours > 0) {
+          timeRemainingText = `${daysRemaining} hari ${remainingHours} jam`;
+        } else {
+          timeRemainingText = `${daysRemaining} hari`;
+        }
+      } else if (hoursRemaining >= 1) {
+        const minutesRemaining = Math.floor(timeUntilDeadline % (60 * 60 * 1000) / (60 * 1000));
+        if (minutesRemaining > 0) {
+          timeRemainingText = `${hoursRemaining} jam ${minutesRemaining} menit`;
+        } else {
+          timeRemainingText = `${hoursRemaining} jam`;
+        }
+      } else {
+        const minutesRemaining = Math.floor(timeUntilDeadline / (60 * 1000));
+        timeRemainingText = `${minutesRemaining} menit`;
+      }
       // Format deadline for display
       const deadlineDate = new Date(task.due_date);
       const formattedDeadline = deadlineDate.toLocaleDateString('id-ID', {
@@ -122,7 +144,7 @@ serve(async (req)=>{
         minute: '2-digit',
         timeZone: 'Asia/Jakarta'
       });
-      // Create email content
+      // Create simple email content using your provided template
       const emailHtml = `
         <html>
           <head>
@@ -169,7 +191,7 @@ serve(async (req)=>{
             to: [
               profile.email
             ],
-            subject: `Pengingat: "${task.title}" - Tersisa ${reminderType}`,
+            subject: `Pengingat: "${task.title}" - Tersisa ${timeRemainingText}`,
             html: emailHtml
           })
         });
