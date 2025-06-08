@@ -24,7 +24,7 @@ const AuthForm: React.FC = () => {
     }
 
     if (password.length < 6) {
-      toast.error("Kata sandi harus minimal 6 karakter");
+      toast.error("Kata sandi minimal 6 karakter");
       return;
     }
 
@@ -176,12 +176,12 @@ const AuthForm: React.FC = () => {
         <form onSubmit={handleSignUp} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="signup-name" className="text-indigo-600">
-              Nama Lengkap
+              Nama
             </Label>
             <Input 
               id="signup-name"
               type="text" 
-              placeholder="Masukkan nama Anda" 
+              placeholder="Bagaimana kami harus memanggilmu?" 
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
